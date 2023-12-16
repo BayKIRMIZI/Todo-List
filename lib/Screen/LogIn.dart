@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Colors/Colors.dart';
+import 'package:todo_list/Data/Auth_Data.dart';
 import 'package:todo_list/Strings/Hint_Texts.dart';
 import 'package:todo_list/Strings/String_Texts.dart';
 
@@ -147,20 +148,25 @@ class _LogIn_ScreenState extends State<LogIn_Screen> {
   Widget Login_Bottom() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: Container(
-        alignment: Alignment.center,
-        width: double.infinity,
-        height: 50,
-        decoration: BoxDecoration(
-          color: custom_gren,
-          borderRadius: BorderRadius.circular(10),
+      child: GestureDetector(
+        onTap: (){
+          AuthenticationRemote().login(email.text, password.text);
+        },
+        child: Container(
+          alignment: Alignment.center,
+          width: double.infinity,
+          height: 50,
+          decoration: BoxDecoration(
+            color: custom_gren,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(logIn_text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 23,
+                fontWeight: FontWeight.bold,
+              )),
         ),
-        child: Text(logIn_text,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 23,
-              fontWeight: FontWeight.bold,
-            )),
       ),
     );
   }

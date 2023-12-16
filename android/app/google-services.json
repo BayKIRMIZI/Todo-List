@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "704069384071",
+    "project_id": "todo-1d011",
+    "storage_bucket": "todo-1d011.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:704069384071:android:c676dcd34ce2524ca04522",
+        "android_client_info": {
+          "package_name": "com.mrredline.todolist.todo_list"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4Q84sMHajygx65-5k5NbSATA0YpdHUBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
