@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:todo_list/Colors/Colors.dart';
+import 'package:todo_list/Data/FireStore.dart';
 import 'package:todo_list/Screen/Add_Note_Screen.dart';
+import 'package:todo_list/Widgets/Stream_Note.dart';
 import 'package:todo_list/Widgets/Task_Widgets.dart';
 
 class Home_Screen extends StatefulWidget {
@@ -48,11 +51,19 @@ class _Home_ScreenState extends State<Home_Screen> {
             }
             return true;
           },
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return Task_Widget();
-            },
-            itemCount: 10,
+          child: Column(
+            children: [
+              Stream_Note(false),
+              Text(
+                'isDone',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey.shade500,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Stream_Note(true),
+            ],
           ),
         ),
       ),

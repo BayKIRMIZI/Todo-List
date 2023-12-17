@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Colors/Colors.dart';
+import 'package:todo_list/Data/FireStore.dart';
+import 'package:todo_list/Model/Notes_Model.dart';
 import 'package:todo_list/Screen/Edit_Screen.dart';
 
 class Task_Widget extends StatefulWidget {
-  const Task_Widget({super.key});
+  Note _note;
+
+  Task_Widget(this._note, {super.key});
 
   @override
   State<Task_Widget> createState() => _Task_WidgetState();
 }
 
-bool isDone = false;
-
 class _Task_WidgetState extends State<Task_Widget> {
   @override
   Widget build(BuildContext context) {
-    return get();
-  }
+    bool isDone = widget._note.isDone;
 
-  Widget get() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Container(
@@ -31,7 +31,7 @@ class _Task_WidgetState extends State<Task_Widget> {
               color: Colors.grey.withOpacity(0.2),
               spreadRadius: 5,
               blurRadius: 7,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -52,32 +52,36 @@ class _Task_WidgetState extends State<Task_Widget> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Title',
-                          style: TextStyle(
+                        Text(
+                          widget._note.title,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Checkbox(
-                            value: isDone,
-                            onChanged: (value) {
-                              setState(() {
-                                isDone = !isDone;
-                              });
-                            }),
+                          activeColor: custom_gren,
+                          value: isDone,
+                          onChanged: (value) {
+                            setState(() {
+                              isDone = !isDone;
+                            });
+                            FireStore_DataSource()
+                                .isTaskDone(widget._note.id, isDone);
+                          },
+                        ),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      'SubTitle',
+                      widget._note.subTitle,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: Colors.grey.shade400,
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
 
                     // Edit ve Time butonları
                     EditButtons(),
@@ -95,10 +99,10 @@ class _Task_WidgetState extends State<Task_Widget> {
     return Container(
       height: 130,
       width: 100,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         image: DecorationImage(
-          image: AssetImage('images/1.png'),
+          image: AssetImage('images/${widget._note.imageIndex}.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -125,9 +129,9 @@ class _Task_WidgetState extends State<Task_Widget> {
                   const SizedBox(
                     width: 10,
                   ),
-                  const Text(
-                    'Time',
-                    style: TextStyle(
+                  Text(
+                    widget._note.time,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -137,20 +141,18 @@ class _Task_WidgetState extends State<Task_Widget> {
               ),
             ),
           ),
-          const SizedBox(
-            width: 20,
-          ),
+          const SizedBox(width: 20),
           GestureDetector(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => Edit_Screen(),
+                builder: (context) => Edit_Screen(widget._note),
               ));
             },
             child: Container(
               width: 90,
               height: 28,
               decoration: BoxDecoration(
-                color: Color(0xffE2F6F1),
+                color: const Color(0xffE2F6F1),
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Padding(

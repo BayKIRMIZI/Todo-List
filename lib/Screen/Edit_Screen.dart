@@ -1,21 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Colors/Colors.dart';
+import 'package:todo_list/Data/FireStore.dart';
+import 'package:todo_list/Model/Notes_Model.dart';
 
 class Edit_Screen extends StatefulWidget {
-  const Edit_Screen({super.key});
+  Note _note;
+
+  Edit_Screen(this._note, {super.key});
 
   @override
   State<Edit_Screen> createState() => _Edit_ScreenState();
 }
 
 class _Edit_ScreenState extends State<Edit_Screen> {
-  final title = TextEditingController();
-  final subTitle = TextEditingController();
+  TextEditingController? title;
+  late TextEditingController subTitle;
 
   FocusNode _focusNode1 = FocusNode();
   FocusNode _focusNode2 = FocusNode();
 
   int listIndex = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    title = TextEditingController(text: widget._note.title);
+    subTitle = TextEditingController(text: widget._note.subTitle);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +73,7 @@ class _Edit_ScreenState extends State<Edit_Screen> {
           style: const TextStyle(fontSize: 18, color: Colors.black),
           decoration: InputDecoration(
             contentPadding:
-            const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             hintText: 'Title',
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -98,7 +110,7 @@ class _Edit_ScreenState extends State<Edit_Screen> {
           style: const TextStyle(fontSize: 18, color: Colors.black),
           decoration: InputDecoration(
             contentPadding:
-            const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             hintText: 'SubTitle',
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -154,7 +166,7 @@ class _Edit_ScreenState extends State<Edit_Screen> {
     );
   }
 
-  Widget Buttons(){
+  Widget Buttons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -164,9 +176,14 @@ class _Edit_ScreenState extends State<Edit_Screen> {
             minimumSize: Size(170, 48),
           ),
           onPressed: () {
+            FireStore_DataSource().UpdateNote(
+                widget._note.id,
+                listIndex,
+                title!.text,
+                subTitle!.text);
             Navigator.pop(context);
           },
-          child: Text('Add Task'),
+          child: Text('Update Task'),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(

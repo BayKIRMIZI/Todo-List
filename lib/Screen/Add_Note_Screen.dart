@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/Colors/Colors.dart';
+import 'package:todo_list/Data/FireStore.dart';
 
 class Add_Screen extends StatefulWidget {
   const Add_Screen({super.key});
@@ -154,7 +155,7 @@ class _Add_ScreenState extends State<Add_Screen> {
     );
   }
 
-  Widget Buttons(){
+  Widget Buttons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -164,6 +165,8 @@ class _Add_ScreenState extends State<Add_Screen> {
             minimumSize: Size(170, 48),
           ),
           onPressed: () {
+            FireStore_DataSource()
+                .AddNote(subTitle.text, title.text, listIndex);
             Navigator.pop(context);
           },
           child: Text('Add Task'),
