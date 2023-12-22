@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_list/Data/FireStore.dart';
+import 'package:todo_list/Widgets/Note_Widget.dart';
 import 'package:todo_list/Widgets/Task_Widgets.dart';
 
 class Stream_Note extends StatefulWidget {
@@ -15,7 +16,7 @@ class _Stream_NoteState extends State<Stream_Note> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FireStore_DataSource().stream(widget.isDone),
+        stream: FireStore_DataSource().stream(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return CircularProgressIndicator();
@@ -25,16 +26,22 @@ class _Stream_NoteState extends State<Stream_Note> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               final note = notesList[index];
-              return Dismissible(
-                key: UniqueKey(),
-                onDismissed: (direction) {
-                  FireStore_DataSource().DeleteNote(note.id);
-                },
-                child: Task_Widget(note),
-              );
+              //return DismissibleTask(note);
+              return Note_Widget(note);
             },
             itemCount: notesList.length,
           );
         });
+  }
+
+  Widget DismissibleTask(final note){
+    return Dismissible(
+      key: UniqueKey(),
+      onDismissed: (direction) {
+        FireStore_DataSource().DeleteNote(note.id);
+      },
+      //child: Task_Widget(note),
+      child: Note_Widget(note),
+    );
   }
 }

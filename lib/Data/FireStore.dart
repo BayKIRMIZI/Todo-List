@@ -21,7 +21,7 @@ class FireStore_DataSource {
     }
   }
 
-  Future<bool> AddNote(String subTitle, String title, int imageIndex) async {
+  Future<bool> AddNote(String subTitle, String title, int tagIndex) async {
     try {
       var uuid = Uuid().v4();
       DateTime data = new DateTime.now();
@@ -35,7 +35,7 @@ class FireStore_DataSource {
         'title': title,
         'subTitle': subTitle,
         'time': '${data.hour}:${data.minute}',
-        'imageIndex': imageIndex,
+        'tagIndex': tagIndex,
         'isDone': false,
       });
       return true;
@@ -54,7 +54,7 @@ class FireStore_DataSource {
           data['title'],
           data['subTitle'],
           data['time'],
-          data['imageIndex'],
+          data['tagIndex'],
           data['isDone'],
         );
       }).toList();
@@ -65,11 +65,11 @@ class FireStore_DataSource {
     }
   }
 
-  Stream<QuerySnapshot> stream(bool isDone) {
+  Stream<QuerySnapshot> stream() {
     return _firestore
         .collection('users')
         .doc(_auth.currentUser!.uid)
-        .collection('notes').where('isDone',isEqualTo: isDone)
+        .collection('notes')
         .snapshots();
   }
 
@@ -88,7 +88,7 @@ class FireStore_DataSource {
     }
   }
 
-  Future<bool> UpdateNote(String userUid, int imageIndex, String title,
+  Future<bool> UpdateNote(String userUid, int tagIndex, String title,
       String subTitle) async {
     try {
       DateTime data = new DateTime.now();
@@ -101,7 +101,7 @@ class FireStore_DataSource {
         'time': '${data.hour}:${data.minute}',
         'subTitle': subTitle,
         'title': title,
-        'imageIndex': imageIndex,
+        'tagIndex': tagIndex,
       });
       return true;
     } catch (e) {

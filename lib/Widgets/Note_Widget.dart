@@ -1,175 +1,160 @@
-import 'dart:ffi';
+import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:todo_list/Colors/Colors.dart';
 import 'package:todo_list/Data/FireStore.dart';
+import 'package:todo_list/Model/Notes_Model.dart';
+import 'package:todo_list/Screen/Edit_Screen.dart';
 import 'package:todo_list/Strings/String_Texts.dart';
-import 'package:todo_list/Widgets/Note_Widget.dart';
 
-class Home_Screen extends StatefulWidget {
-  const Home_Screen({super.key});
+class Note_Widget extends StatefulWidget {
+  Note _note;
+
+  Note_Widget(this._note, {super.key});
 
   @override
-  State<Home_Screen> createState() => _Home_ScreenState();
+  State<Note_Widget> createState() => _Note_WidgetState();
 }
 
-class _Home_ScreenState extends State<Home_Screen> {
-  @override
-  bool show = true;
-
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: customBackgroundColor,
-        title: Center(
-            child: Text(
-          appBar_text,
-          style: TextStyle(color: Colors.white),
-        )),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 5),
-            child: Icon(
-              Icons.calendar_month,
-              color: Colors.white,
-            ),
-          )
-        ],
-      ),
-      resizeToAvoidBottomInset: false,
-      backgroundColor: backgroundColors,
-      floatingActionButton: Visibility(
-        visible: show,
-        child: FloatingActionButton(
-          onPressed: () {
-            UpdateController();
-            getDialog(newTask_Title);
-          },
-          backgroundColor: customBackgroundColor,
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-            size: 30,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: StreamBuilder<QuerySnapshot>(
-            stream: FireStore_DataSource().stream(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return CircularProgressIndicator();
-              }
-              final notesList = FireStore_DataSource().getNotes(snapshot);
-              return ListView.builder(
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  final note = notesList[index];
-                  return Note_Widget(note);
-                },
-                itemCount: notesList.length,
-              );
-            }),
-      ),
-    );
-  }
-
-  TextEditingController? title = TextEditingController();
-  TextEditingController? subTitle = TextEditingController();
-
+class _Note_WidgetState extends State<Note_Widget> {
+  TextEditingController? title;
+  TextEditingController? subTitle;
   FocusNode _focusNode1 = FocusNode();
   FocusNode _focusNode2 = FocusNode();
-
   int listIndex = 0;
-  String? tagIndex;
 
-  void UpdateController() {
-    title = TextEditingController();
-    subTitle = TextEditingController();
-    listIndex = 0;
-    tagIndex = null;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    title = TextEditingController(text: widget._note.title);
+    subTitle = TextEditingController(text: widget._note.subTitle);
+    listIndex = widget._note.tagIndex;
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Container(
+        width: double.infinity,
+        height: 130,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            children: [
+              // ana resim
+              TaskIcon(),
 
-  Widget TagSelect() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20, right: 5),
-            child: Icon(
-              Icons.sell_outlined,
-              color: customBackgroundColor,
-              size: 35,
-            ),
+              const SizedBox(width: 25),
+              // Başlık ve alt başlık
+              TaskStrings(),
+
+              TaskPopUpButton(),
+            ],
           ),
         ),
-        Expanded(
-          flex: 3,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 25),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(width: 2.0, color: Colors.grey.shade400),
-              ),
-              child: StatefulBuilder(
-                builder: (BuildContext context, StateSetter dropDownState) {
-                  return DropdownButton2<String>(
-                    isExpanded: true,
-                    hint: Text(
-                      taskTag_hint,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    items: taskTag
-                        .map((String item) => DropdownMenuItem<String>(
-                      value: item,
-                      child: Text(
-                        item,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ))
-                        .toList(),
-                    value: tagIndex,
-                    onChanged: (String? value) {
-                      dropDownState(() {
-                        tagIndex = value;
-                      });
-                    },
-                    buttonStyleData: const ButtonStyleData(
-                      padding: EdgeInsets.only(right: 10, bottom: 5, top: 5),
-                    ),
-                    underline: const Text(''),
-                    dropdownStyleData: DropdownStyleData(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20)
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  void showToastMessage() {
+  Widget TaskIcon() {
+    return Container(
+      margin: EdgeInsets.only(top: 20, left: 10),
+      alignment: Alignment.topCenter,
+      child: Icon(
+        //Icons.catching_pokemon,
+        Icons.circle,
+        color: taskColor[widget._note.tagIndex],
+      ),
+    );
+  }
+
+  Widget TaskStrings() {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget._note.title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Text(
+            widget._note.subTitle,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: Colors.grey.shade400,
+            ),
+          ),
+          const Spacer(),
+
+          // Edit ve Time butonları
+          //EditButtons(),
+        ],
+      ),
+    );
+  }
+
+  Widget TaskPopUpButton() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: PopupMenuButton(
+        iconSize: 30,
+        itemBuilder: (context) => [
+          PopupMenuItem(
+            child: Text(popUpEdit),
+            onTap: () {
+              print(widget._note.title);
+              UpdateController();
+              getDialog(updateTask_Title);
+            },
+          ),
+          PopupMenuItem(
+            child: Text(popUpDelete),
+            onTap: () {
+              FireStore_DataSource().DeleteNote(widget._note.id);
+              showToastMessage(deleteTask_toast);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void UpdateController(){
+    title = TextEditingController(text: widget._note.title);
+    subTitle = TextEditingController(text: widget._note.subTitle);
+    listIndex = widget._note.tagIndex;
+  }
+
+  void showToastMessage(String _msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(addTask_toast),
+      content: Text(_msg),
     ));
   }
 
@@ -325,7 +310,7 @@ class _Home_ScreenState extends State<Home_Screen> {
     );
   }
 
-  Widget TagsSelect() {
+  Widget TagSelect() {
     return Row(
       children: [
         Expanded(
@@ -407,15 +392,14 @@ class _Home_ScreenState extends State<Home_Screen> {
             child: MaterialButton(
               color: customBackgroundColor,
               child: Text(
-                addTask_text,
+                updateTask_text,
                 style: const TextStyle(color: Colors.white, fontSize: 20),
               ),
               onPressed: () {
-                FireStore_DataSource()
-                    .AddNote(subTitle!.text, title!.text, listIndex);
+                FireStore_DataSource().UpdateNote(
+                    widget._note.id, listIndex, title!.text, subTitle!.text);
                 Navigator.pop(context);
-
-                showToastMessage();
+                showToastMessage(upadteTask_toast);
               },
             ),
           ),

@@ -3,7 +3,7 @@ class Note {
   String title;
   String subTitle;
   String time;
-  int imageIndex;
+  int tagIndex;
   bool isDone;
 
   Note(
@@ -11,7 +11,7 @@ class Note {
     this.title,
     this.subTitle,
     this.time,
-    this.imageIndex,
+    this.tagIndex,
     this.isDone,
   );
 }

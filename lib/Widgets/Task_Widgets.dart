@@ -102,7 +102,7 @@ class _Task_WidgetState extends State<Task_Widget> {
       decoration: BoxDecoration(
         color: Colors.white,
         image: DecorationImage(
-          image: AssetImage('images/${widget._note.imageIndex}.png'),
+          image: AssetImage('images/${widget._note.tagIndex}.png'),
           fit: BoxFit.cover,
         ),
       ),
